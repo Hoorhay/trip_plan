@@ -1,7 +1,7 @@
 {
   "name": "Trip Plan",
   "short_name": "Trip Plan",
-  "description": "Day-by-day trip plan that reads a published Google Sheet.",
+  "description": "Day-by-day trip plan for your phone.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

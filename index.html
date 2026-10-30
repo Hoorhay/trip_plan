@@ -226,9 +226,7 @@ function buildTrip(text){
 /*PURE-END*/
 
 (function(){
-  /* Put your published CSV link between the quotes. The page then loads it on its own every time it opens online. */
-  var DEFAULT_URL = '';
-  var KEY = { csv: 'pocket.csv', at: 'pocket.at', src: 'pocket.src', url: 'pocket.url' };
+  var KEY = { csv: 'pocket.csv', at: 'pocket.at', src: 'pocket.src' };
   function sget(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
   function sset(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
   function $(id){ return document.getElementById(id); }
@@ -294,7 +292,7 @@ function buildTrip(text){
 
   function persistText(){
     if (state.persist === 'yes') return 'The browser keeps this data (persistent storage granted).';
-    if (state.persist === 'no') return 'The browser may clear this data when the device is low on space. Installing the app to the home screen makes that less likely. Keep the published link set, or save a copy below.';
+    if (state.persist === 'no') return 'The browser may clear this data when the device is low on space. Installing the app to the home screen makes that less likely. Save a copy below to keep a backup.';
     return 'This browser does not report whether saved data is protected.';
   }
   function checkPersist(ask){
@@ -314,23 +312,6 @@ function buildTrip(text){
     var a = document.createElement('a'); a.href = url; a.download = 'trip-plan.csv';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
-  }
-
-  function currentUrl(){ return sget(KEY.url) || DEFAULT_URL; }
-  function refresh(){
-    var u = currentUrl();
-    if (!u || navigator.onLine === false || (state.tab === 'data' && state.trip.days.length)) return;
-    fetch(u, { cache: 'no-store' }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
-      .then(function(t){
-        if (!t || t === sget(KEY.csv) || !buildTrip(t).days.length) return;
-        var keep = state.sel, wasEmpty = !state.trip.days.length;
-        if (load(t, 'published link', true)) {
-          state.msg = '';
-          if (wasEmpty) { state.tab = 'day'; initSel(); } else state.sel = Math.min(keep, state.trip.days.length - 1);
-          render();
-        }
-      })
-      .catch(function(){});
   }
 
   function renderBanner(){
@@ -429,7 +410,7 @@ function buildTrip(text){
 
   function viewData(){
     var root = h('div', { class: 'list' });
-    root.appendChild(h('div', { class: 'msg', text: state.msg || (state.trip.days.length ? 'Showing ' + state.trip.days.length + ' days from ' + state.info.src + (state.info.at ? ', loaded ' + state.info.at : '') + '.' : 'No plan loaded yet. Load a CSV file, paste text or fetch your published link.') }));
+    root.appendChild(h('div', { class: 'msg', text: state.msg || (state.trip.days.length ? 'Showing ' + state.trip.days.length + ' days from ' + state.info.src + (state.info.at ? ', loaded ' + state.info.at : '') + '.' : 'No plan loaded yet. Load a CSV file or paste text below.') }));
 
     var file = h('input', { type: 'file', id: 'file', accept: '.csv,.tsv,.txt,text/csv,text/plain' });
     file.addEventListener('change', function(){
@@ -441,21 +422,9 @@ function buildTrip(text){
     var paste = h('textarea', { id: 'paste', placeholder: 'Or paste CSV text here', spellcheck: 'false' });
     var pb = h('button', { type: 'button', class: 'btn primary', text: 'Load pasted text' });
     pb.addEventListener('click', function(){ if (paste.value.trim()) load(paste.value, 'pasted text', true); });
-    var url = h('input', { type: 'text', id: 'url', placeholder: 'https://docs.google.com/spreadsheets/d/e/…/pub?output=csv', inputmode: 'url', autocomplete: 'off' });
-    url.value = currentUrl();
-    var fb = h('button', { type: 'button', class: 'btn', text: 'Fetch from link' });
-    fb.addEventListener('click', function(){
-      var u = url.value.trim(); if (!u) return;
-      sset(KEY.url, u);
-      fetch(u, { cache: 'no-store' }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
-        .then(function(t){ load(t, 'published link', true); })
-        .catch(function(){ state.msg = 'Could not fetch the link. Check the address and your connection. The saved copy stays in use.'; render(); });
-    });
     root.appendChild(h('div', { class: 'card' },
       h('div', { class: 'field' }, h('label', { class: 'lab', for: 'file', text: 'CSV file' }), file),
-      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'paste', text: 'Pasted text' }), paste, h('div', { class: 'btns' }, pb)),
-      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'url', text: 'Published link' }), url, h('div', { class: 'btns' }, fb),
-        h('div', { class: 'hint', text: 'The page also fetches this link by itself each time it opens while online. Google can take a few minutes to publish sheet edits.' }))));
+      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'paste', text: 'Pasted text' }), paste, h('div', { class: 'btns' }, pb))));
 
     var sb = h('button', { type: 'button', class: 'btn', text: 'Save a copy (CSV)' });
     sb.addEventListener('click', saveCopy);
@@ -488,7 +457,7 @@ function buildTrip(text){
     real.addEventListener('click', function(){ state.clock = null; initSel(); render(); });
     var rs = h('button', { type: 'button', class: 'btn', text: 'Clear saved plan' });
     rs.addEventListener('click', function(){
-      try { localStorage.removeItem(KEY.csv); localStorage.removeItem(KEY.src); localStorage.removeItem(KEY.at); } catch (e) {}
+      try { localStorage.removeItem(KEY.csv); localStorage.removeItem(KEY.src); localStorage.removeItem(KEY.at); localStorage.removeItem('pocket.url'); } catch (e) {}
       state.trip = { title: '', days: [], issues: [] }; state.info = { src: '', at: '' }; state.csv = ''; state.msg = 'Saved plan cleared.'; render();
     });
     root.appendChild(h('div', { class: 'card' },
@@ -522,8 +491,7 @@ function buildTrip(text){
     initSel(); render();
   } else { state.tab = 'data'; checkPersist(false); render(); }
 
-  refresh();
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden) refresh(); });
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) render(); });
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     navigator.serviceWorker.register('sw.js').catch(function(){});
   }
