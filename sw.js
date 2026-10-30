@@ -1,7 +1,7 @@
 /* Pocket Trip Plan service worker.
    Keeps the app files on the phone so the page opens offline.
    Change CACHE (v1 -> v2) after editing index.html if you want phones to drop the old copy at once. */
-const CACHE = 'pocket-trip-v1';
+const CACHE = 'pocket-trip-v3';
 const SHELL = ['./', 'index.html', 'manifest.json', 'icon-192.png'];
 
 self.addEventListener('install', function (e) {

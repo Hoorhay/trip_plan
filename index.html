@@ -17,17 +17,17 @@
 :root{
   --bg:#f5f6f2; --surface:#ffffff; --ink:#1a1d19; --muted:#5a6158; --line:#dde1d7;
   --accent:#3b7a1d; --accent-ink:#ffffff; --warn:#8f5a00; --warn-bg:#fbf1da;
-  --err:#b3261e; --err-bg:#fbe6e3; --crit:#c4271c; --crit-bg:#fbe6e3; --show:#a85a00; --we:#8f6b00; --today:#1a1d19;
+  --err:#b3261e; --err-bg:#fbe6e3; --crit:#c4271c; --crit-bg:#fbe6e3; --we:#8f6b00; --today:#1a1d19;
   --font:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0f1110; --surface:#181b19; --ink:#f4f4f1; --muted:#9ea39c; --line:#2a2e2b;
   --accent:#6fb03c; --accent-ink:#0d1a07; --warn:#e8b93a; --warn-bg:#2b2410;
-  --err:#ff8a7d; --err-bg:#2f1815; --crit:#ff6b5e; --crit-bg:#2a1513; --show:#ff9f1a; --we:#e0b030; --today:#f4f4f1; color-scheme:dark}}
+  --err:#ff8a7d; --err-bg:#2f1815; --crit:#ff6b5e; --crit-bg:#2a1513; --we:#e0b030; --today:#f4f4f1; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1110; --surface:#181b19; --ink:#f4f4f1; --muted:#9ea39c; --line:#2a2e2b;
   --accent:#6fb03c; --accent-ink:#0d1a07; --warn:#e8b93a; --warn-bg:#2b2410;
-  --err:#ff8a7d; --err-bg:#2f1815; --crit:#ff6b5e; --crit-bg:#2a1513; --show:#ff9f1a; --we:#e0b030; --today:#f4f4f1; color-scheme:dark}
+  --err:#ff8a7d; --err-bg:#2f1815; --crit:#ff6b5e; --crit-bg:#2a1513; --we:#e0b030; --today:#f4f4f1; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;margin:0;
   padding-block:calc(18px + env(safe-area-inset-top,0px)) calc(36px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -48,43 +48,39 @@ button{cursor:pointer}
 .banner .t{font-weight:600;min-width:0;overflow-wrap:anywhere}
 .banner .r{margin-left:auto;font-size:13px;color:var(--muted);white-space:nowrap}
 .strip{position:relative;display:flex;gap:6px;overflow-x:auto;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:2px max(16px,env(safe-area-inset-left,0px)) 6px}
-.dchip{flex:0 0 48px;height:68px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
+.dchip{flex:0 0 48px;height:60px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
 .dchip .wd{font-size:12px;font-weight:500;color:var(--muted)} .dchip .wd.we{color:var(--we)}
 .dchip .dom{font-family:var(--mono);font-size:18px;font-weight:600}
-.dchip .bar{width:20px;height:3px;border-radius:2px;background:transparent} .dchip .bar.show{background:var(--show)}
 .dchip.today{box-shadow:inset 0 0 0 2px var(--today)}
 .dchip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .dchip.on .wd{color:var(--accent-ink)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .dayno{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-h2{margin:0;font-size:22px;line-height:1.2;font-weight:600}
-h2.show{color:var(--show)}
+h2{margin:0;font-size:22px;line-height:1.2;font-weight:600;overflow-wrap:anywhere}
 .date{font-size:14px;color:var(--muted)}
-.row{display:grid;grid-template-columns:56px 24px minmax(0,1fr);column-gap:10px;padding:11px 0;border-top:1px solid var(--line);align-items:start}
-.time{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.3}
-.time small{display:block;font-size:12px;font-weight:500;color:var(--muted)}
+.row{display:grid;grid-template-columns:100px minmax(0,1fr);column-gap:10px;padding:11px 0;border-top:1px solid var(--line);align-items:start}
+.time{font-family:var(--mono);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.5;overflow-wrap:anywhere}
 .time.crit{color:var(--crit)}
-.ico{text-align:center;line-height:1.35}
 .what{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;overflow-wrap:anywhere}
 .what.crit .title{font-weight:600}
 .note{font-size:14px;color:var(--muted)}
-.arrow{color:var(--muted);margin:0 3px}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 4px 0 1px;border:1px solid var(--muted)}
 .row.done .title,.row.done .time{color:var(--muted)}
 .link{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;margin-top:4px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
 .chips{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--line);align-items:center}
+.chip{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-decoration:none;font-size:15px}
+a.chip{border-color:var(--accent);font-weight:500}
 .nav{display:flex;gap:10px}
 .nav button{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:500}
 .nav button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
 .nav button:disabled{opacity:.4;cursor:default}
 .empty{color:var(--muted);font-size:15px}
 .list{display:flex;flex-direction:column;gap:10px}
-.item{display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:center;width:100%;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.item{display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:start;width:100%;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
 .item.today{border-color:var(--accent)}
 .item .d{display:flex;flex-direction:column;align-items:center}
 .item .sum{font-size:14px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
-.item .pl{font-size:16px;font-weight:600}
-.item .pl.show{color:var(--show)}
+.item .ln.crit{color:var(--crit)}
+.item .pl{font-size:16px;font-weight:600;overflow-wrap:anywhere}
 .field{display:flex;flex-direction:column;gap:6px}
 .lab{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 input[type=text],input[type=date],input[type=time],textarea{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:8px 12px;font-size:15px}
@@ -99,6 +95,8 @@ textarea{font-family:var(--mono);font-size:13px;min-height:110px;white-space:pre
 .issue.error b{color:var(--err)}
 .issue code{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin-top:2px}
 .hint{font-size:13px;color:var(--muted)}
+.rules{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.rules code{font-family:var(--mono);font-size:13px}
 [hidden]{display:none!important}
 </style>
 </head>
@@ -120,53 +118,14 @@ textarea{font-family:var(--mono);font-size:13px;min-height:110px;white-space:pre
   <main id="view"></main>
 </div>
 
-<script type="text/plain" id="sample-csv">Whisky Show 2027,,,,,,
-#,Deň,Dátum,Miesto,Aktivity,Odhady času,Pool
-1,so,25.9.2027,KSC ➔ EDI,"!07:08 ; 🏠 Z domu
-07:18 ; Hl. pošta > 🚊 #2 > Staničné nám.
-07:48-16:18 ; KSC > 🚅 RJ1012 > PRG
-15:00 ; 🏨 Leonardo Haymarket",,
-2,ne,26.9.2027,EDI,,,"SMWS Vaults
-Bow Bar"
-3,po,27.9.2027,EDI,,,"SMWS Vaults
-Bow Bar"
-4,ut,28.9.2027,EDI,,,"SMWS Vaults
-Bow Bar"
-5,st,29.9.2027,EDI ➔ LON,,,
-6,št,30.9.2027,Warner Bros Harry Potter,"!07:20 ; 🏠 Z hotela
-07:30-08:30 ; Ⓜ️ B > Zličín > 🚌 #100 > PRG T2
-!10:15 ; ⏰ Gate closes
-10:35-11:30 ; ✈️ FR1014 ; PRG > STN
-; 🚆 STN Express > Liverpool St. > Ⓜ️ Circle > Tower Hill
-!16:30 ; 🥃 SMWS",,
-7,pi,1.10.2027,Whisky Show,"!15:00 ; 🧍 do radu
-16:00-21:00 ; 🥃 WS
-; 🍺 pivo",,
-8,so,2.10.2027,Whisky Show,"!10:30 ; 🧍 do radu
-11:30-18:00 ; 🥃 WS",,
-9,ne,3.10.2027,Whisky Show,"!10:30 ; 🧍 do radu
-11:30-18:00 ; 🥃 WS",,
-10,po,4.10.2027,➔ KE,"08:45-10:00 ; Tower Hill > Ⓜ️ Circle/District > Hammersmith > Ⓜ️ Piccadilly > LHR
-12:10-14:50 ; ✈️ LX319 ; LHR > ZRH
-17:10-18:55 ; ✈️ LX1490 ; ZRH > KE",,
-TODO,,,,,,
-</script>
-
 <script>
 /*PURE-START*/
-var ICONS = {'🏠':1,'🏨':1,'🚆':1,'🚌':1,'🚊':1,'Ⓜ':1,'✈':1,'⏰':1,'🥃':1,'🍺':1,'🧍':1,'🚶':1,'🍽':1};
-var ALIAS = {'🚅':'🚆','🚄':'🚆','🚈':'🚆','🚉':'🚆','🚇':'Ⓜ','🚍':'🚌','🚋':'🚊'};
-var SERVICES = {'🚆':1,'🚌':1,'🚊':1,'Ⓜ':1,'✈':1,'🚶':1};
-var LINES = {'Circle':'#f5b800','District':'#1a9a3c','Piccadilly':'#1f4fd1','Central':'#e1251b','Northern':'#222222','Victoria':'#0099d8','Jubilee':'#868f98','Bakerloo':'#a45a2a','Metropolitan':'#9b0058','Hammersmith & City':'#e885a5','Elizabeth':'#6950a1'};
-var CITIES = {EDI:'Edinburgh',LON:'London',KSC:'Košice',KE:'Košice',PRG:'Prague',STN:'London Stansted',LHR:'London Heathrow'};
-var PICTO = /^[\p{Extended_Pictographic}Ⓜ]/u;
 var WD = ['ne','po','ut','st','št','pi','so'];
 
 function pad(n){ return String(n).padStart(2, '0'); }
-function canon(ch){ return ALIAS[ch] || ch; }
 function trim(s){ return s.trim(); }
-/* Matching strips U+FE0F; drawing puts it back so characters like the plane and the circled M show as colour emoji. */
-function emo(ch){ return (ch && ch.codePointAt(0) > 255 && /\p{Emoji}/u.test(ch) && !/\p{Emoji_Presentation}/u.test(ch)) ? ch + '️' : ch; }
+function arrows(s){ return s.replace(/>/g, '➔'); }
+function norm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim(); }
 
 function parseCSV(t){
   t = t.replace(/^﻿/, '');
@@ -185,103 +144,47 @@ function parseCSV(t){
   return rows;
 }
 
-function takeIcon(str, warn){
-  var ch = Array.from(str)[0] || '';
-  if (ICONS[ch] || ALIAS[ch]) return { icon: ch, rest: str.slice(ch.length).trim() };
-  if (ch && PICTO.test(ch)) { warn('Unknown icon "' + ch + '". Use a known one or remove it.'); return { icon: ch, rest: str.slice(ch.length).trim() }; }
-  return { icon: '', rest: str };
-}
-
-function lev(a, b){
-  var d = [], i, j;
-  for (i = 0; i <= a.length; i++) d[i] = [i];
-  for (j = 1; j <= b.length; j++) d[0][j] = j;
-  for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++)
-    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
-  return d[a.length][b.length];
-}
-function nearLine(n){
-  var best = null;
-  Object.keys(LINES).forEach(function(k){ if (k !== n && lev(n.toLowerCase(), k.toLowerCase()) <= 2) best = k; });
-  return best;
-}
-
-function parseRoute(str, warn, fail){
-  if (str.indexOf('>') === -1) return null;
-  return str.split('>').map(function(p){
-    var t = takeIcon(p.trim(), warn);
-    var name = t.rest, ci = canon(t.icon), ride = !!SERVICES[ci];
-    var m = name.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
-    if (m && /[A-Za-z]/.test(m[2]) && !/[~\d]/.test(m[2])) {
-      warn('Write "' + m[2] + '" as its own step: Place > ' + (t.icon || 'Ⓜ') + ' ' + m[2] + ' > Next place.');
-      name = m[1];
-    }
-    if (!name) fail('Empty step in a route. Check the ">" signs.');
-    var names = ride ? name.split('/').map(trim) : [name];
-    if (ci === 'Ⓜ') names.forEach(function(n){
-      var near = LINES[n] ? null : nearLine(n);
-      if (near) warn('Unknown line "' + n + '". Did you mean ' + near + '?');
-    });
-    return { icon: t.icon, ride: ride, names: names };
-  });
-}
-
-function parseActivity(raw, report, ctx, city){
-  var line = raw.replace(/️/g, '').trim();
+/* One line: "time ; text ; note ; ...". Only three things are read from it:
+   a leading ! on the time (red), > (shown as ➔), and a part that starts with @ (map button).
+   Everything else is shown exactly as written. */
+function parseActivity(raw, report){
+  var line = raw.trim();
   if (!line) return null;
-  function warn(m){ report('warning', m); }
-  function fail(m){ report('error', m); }
-  var item = { time: null, icon: '', title: '', legs: null, note: '', noteLegs: null, map: '', plain: false };
-  var p0 = '', title = '', note = '';
   if (line.indexOf(';') === -1) {
-    var o = line.match(/^(!)?(\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?\s+(\S.*)$/);
-    if (o) { p0 = (o[1] || '') + o[2] + (o[3] ? '-' + o[3] : ''); title = o[4]; warn('Missing ";" after the time. Read as time and title.'); }
-    else {
-      warn(/^!?\d/.test(line) ? 'Starts like a time but cannot be read. Check the time and add ";". Shown as plain text.' : 'Not in "time ; title" form. Shown as plain text.');
-      item.plain = true; item.title = line; return item;
-    }
-  } else {
-    var parts = line.split(';').map(trim);
-    p0 = parts[0]; title = parts[1] || ''; note = parts[2] || '';
-    if (parts.length > 3) warn('More than three fields. Everything after the third is ignored.');
+    report('warning', 'No ";" in this line. Shown as written.');
+    return { plain: true, text: arrows(line) };
   }
-  if (p0 === '!') warn('Critical marker "!" needs a time.');
-  else if (p0 !== '') {
-    var m = p0.match(/^(!)?\s*(\d{1,2}):(\d{2})(?:\s*-\s*(\d{1,2}):(\d{2}))?$/);
-    if (!m) fail('First field must be a time like 07:30 or 07:30-08:30, or be empty.');
-    else if (Number(m[2]) > 23 || Number(m[3]) > 59 || (m[4] !== undefined && (Number(m[4]) > 23 || Number(m[5]) > 59))) fail('That time does not exist: ' + p0);
-    else {
-      var s = Number(m[2]) * 60 + Number(m[3]), e = m[4] === undefined ? null : Number(m[4]) * 60 + Number(m[5]);
-      item.time = { crit: !!m[1], start: s, end: e };
-      if (e !== null && e < s) warn('End time is earlier than the start time.');
-      if (ctx.prev !== null && s < ctx.prev) warn('Starts earlier than the timed line above.');
-      ctx.prev = s;
-    }
+  var f = line.split(';').map(trim);
+  var item = { plain: false, crit: false, timeText: '', time: null, title: '', notes: [], maps: [] };
+  var t = f[0];
+  if (t[0] === '!') { item.crit = true; t = t.slice(1).trim(); }
+  item.timeText = t;
+  if (t !== '') {
+    var m = t.match(/^(\d{1,2}):(\d{2})(?:\s*-\s*(\d{1,2}):(\d{2}))?$/);
+    if (m && Number(m[1]) < 24 && Number(m[2]) < 60 && (m[3] === undefined || (Number(m[3]) < 24 && Number(m[4]) < 60))) {
+      item.time = { start: Number(m[1]) * 60 + Number(m[2]), end: m[3] === undefined ? null : Number(m[3]) * 60 + Number(m[4]) };
+    } else report('warning', 'Could not read "' + t + '" as a time. It is shown as written and left out of the next-up banner.');
   }
-  if (!title) fail('Missing title after the time.');
-  if (title.indexOf('>') !== -1) { item.legs = parseRoute(title, warn, fail); item.title = title; }
-  else { var ti = takeIcon(title, warn); item.icon = ti.icon; item.title = ti.rest; }
-  if (note[0] === '@') { item.map = note.slice(1).trim(); if (!item.map) fail('"@" needs a place to search for.'); }
-  else { item.note = note; item.noteLegs = parseRoute(note, warn, fail); }
-  if (!item.map && canon(item.icon) === '🏨' && city && item.title) item.map = item.title + ' ' + city;
+  f.slice(1).forEach(function(x, i){
+    if (!x) return;
+    if (x[0] === '@') {
+      var q = x.slice(1).trim();
+      if (q) item.maps.push(q); else report('warning', '"@" needs a place after it.');
+    } else if (i === 0) item.title = arrows(x);
+    else item.notes.push(arrows(x));
+  });
   return item;
 }
-
-function cityOf(place){
-  var found = null, re = /\b(EDI|LON|KSC|PRG|KE)\b/g, m;
-  while ((m = re.exec(place)) !== null) found = CITIES[m[1]];
-  return found;
-}
-function norm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim(); }
 
 function buildTrip(text){
   var rows = parseCSV(text), issues = [];
   var title = ((rows[0] && rows[0][0]) || '').trim() || 'Trip';
   var hi = -1;
   for (var i = 0; i < rows.length; i++) if ((rows[i][0] || '').trim() === '#') { hi = i; break; }
-  var col = { date: 2, place: 3, act: 4, pool: 6 };
+  var col = { day: 1, date: 2, place: 3, act: 4, pool: 6 };
   if (hi >= 0) rows[hi].forEach(function(h, k){
     var n = norm(h);
+    if (n === 'den' || n === 'day') col.day = k;
     if (n === 'datum' || n === 'date') col.date = k;
     if (n === 'miesto' || n === 'place') col.place = k;
     if (n === 'aktivity' || n === 'activities') col.act = k;
@@ -290,29 +193,31 @@ function buildTrip(text){
   var days = [];
   rows.slice(hi + 1).forEach(function(r){
     if (!/^\d+$/.test((r[0] || '').trim())) return;
-    var day = { n: r[0].trim(), iso: '', short: '', dom: '', wd: '', weekend: false, place: (r[col.place] || '').trim(), show: false, items: [], pool: [] };
+    var dateText = (r[col.date] || '').trim();
+    var day = { n: r[0].trim(), iso: '', dateText: dateText, dom: '', wd: (r[col.day] || '').trim(), weekend: false, place: arrows((r[col.place] || '').trim()), items: [], pool: [] };
     function add(level, msg, raw){ issues.push({ level: level, msg: msg, day: day.n, raw: raw || '' }); }
-    var dm = (r[col.date] || '').trim().match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/) || null;
-    var im = (r[col.date] || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    var dm = dateText.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/), im = dateText.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     var y, mo, d;
     if (dm) { d = +dm[1]; mo = +dm[2]; y = +dm[3]; } else if (im) { y = +im[1]; mo = +im[2]; d = +im[3]; }
     if (y) {
       day.iso = y + '-' + pad(mo) + '-' + pad(d);
-      var dt = new Date(Date.UTC(y, mo - 1, d));
-      day.wd = WD[dt.getUTCDay()]; day.weekend = dt.getUTCDay() === 0 || dt.getUTCDay() === 6;
-      day.dom = String(d); day.short = d + '.' + mo + '.';
-    } else add('error', 'Date not understood. Use 25.9.2027 or 2027-09-25.', r[col.date] || '');
-    day.show = /^Whisky Show/i.test(day.place);
-    var city = cityOf(day.place), ctx = { prev: null };
+      var dt = new Date(Date.UTC(y, mo - 1, d)), g = dt.getUTCDay();
+      day.weekend = g === 0 || g === 6; day.dom = String(d);
+      if (!day.wd) day.wd = WD[g];
+    } else add('error', 'Date not understood. Use 25.9.2027 or 2027-09-25.', dateText);
     String(r[col.act] || '').split(/\r?\n/).forEach(function(raw){
-      var it = parseActivity(raw, function(l, m){ add(l, m, raw.trim()); }, ctx, city);
+      var it = parseActivity(raw, function(l, m){ add(l, m, raw.trim()); });
       if (it) day.items.push(it);
     });
     String(r[col.pool] || '').split(/\r?\n/).forEach(function(raw){
-      var parts = raw.replace(/️/g, '').split(';').map(trim);
-      if (!parts[0]) return;
-      var q = parts[1] && parts[1][0] === '@' ? parts[1].slice(1).trim() : parts[0] + (city ? ' ' + city : '');
-      day.pool.push({ name: parts[0], map: q });
+      var f = raw.split(';').map(trim).filter(Boolean);
+      if (!f.length) return;
+      var name = '', q = '';
+      f.forEach(function(x, i){
+        if (x[0] === '@') { var p = x.slice(1).trim(); if (i === 0) name = p; q = p; }
+        else name = name ? name + ' ; ' + x : x;
+      });
+      if (name) day.pool.push({ name: arrows(name), map: q });
     });
     days.push(day);
   });
@@ -337,8 +242,7 @@ function buildTrip(text){
     for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c) el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); }
     return el;
   }
-  var sampleCsv = $('sample-csv').textContent.replace(/^\n/, '');
-  var state = { trip: null, tab: 'day', sel: 0, clock: null, info: { src: 'Built-in sample', at: '' }, msg: '' };
+  var state = { trip: { title: '', days: [], issues: [] }, tab: 'day', sel: 0, clock: null, info: { src: '', at: '' }, msg: '', persist: 'unknown', csv: '' };
 
   function now(){
     var d = new Date();
@@ -354,28 +258,15 @@ function buildTrip(text){
     var pa = a.split('-'), pb = b.split('-');
     return Math.round((Date.UTC(+pb[0], +pb[1] - 1, +pb[2]) - Date.UTC(+pa[0], +pa[1] - 1, +pa[2])) / 86400000);
   }
-  function fmt(m){ return pad(Math.floor(m / 60)) + ':' + pad(m % 60); }
   function mapUrl(q){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
-  function itemText(it){
-    if (it.legs) return it.legs.map(function(l){ return (l.icon ? emo(l.icon) + ' ' : '') + l.names.join('/'); }).join(' ➔ ');
-    return (it.icon ? emo(it.icon) + ' ' : '') + it.title;
-  }
-  function routeNode(legs){
-    var box = h('span');
-    legs.forEach(function(l, i){
-      if (i) box.appendChild(h('span', { class: 'arrow', text: '➔' }));
-      if (l.icon) box.appendChild(document.createTextNode(emo(l.icon) + ' '));
-      l.names.forEach(function(n, j){
-        if (j) box.appendChild(document.createTextNode('/'));
-        if (l.ride && LINES[n]) box.appendChild(h('span', { class: 'dot', style: 'background:' + LINES[n] }));
-        box.appendChild(document.createTextNode(n));
-      });
-    });
-    return box;
+  function lineText(it){
+    if (it.plain) return it.text;
+    return (it.timeText ? it.timeText + '  ' : '') + (it.title || it.notes[0] || '');
   }
 
   function initSel(){
     var n = now().iso, days = state.trip.days, k = -1;
+    if (!days.length) return;
     for (var i = 0; i < days.length; i++) if (days[i].iso && days[i].iso >= n) { k = i; break; }
     state.sel = k === -1 ? days.length - 1 : k;
   }
@@ -386,32 +277,58 @@ function buildTrip(text){
     state.trip = trip;
     state.info = { src: src, at: new Date().toLocaleString() };
     state.msg = 'Loaded ' + trip.days.length + ' days from ' + src + '.';
-    if (persist) { sset(KEY.csv, text); sset(KEY.src, src); sset(KEY.at, state.info.at); }
+    state.csv = text;
+    if (persist) { sset(KEY.csv, text); sset(KEY.src, src); sset(KEY.at, state.info.at); checkPersist(true); }
     initSel(); render();
     return true;
   }
 
   function renderHead(){
-    var t = state.trip, ds = t.days.filter(function(d){ return d.iso; });
-    $('title').textContent = t.title;
-    if (ds.length) {
-      var a = ds[0], b = ds[ds.length - 1];
-      $('range').textContent = a.short + ' – ' + b.short + b.iso.slice(0, 4);
-    } else $('range').textContent = '';
+    var t = state.trip, ds = t.days.filter(function(d){ return d.dateText; });
+    $('title').textContent = t.title || 'Pocket Trip Plan';
+    $('range').textContent = ds.length ? ds[0].dateText + ' – ' + ds[ds.length - 1].dateText : '';
     var places = t.days.map(function(d){ return d.place; }).filter(Boolean);
     $('route').textContent = places.length ? places[0] + ' … ' + places[places.length - 1] : '';
-    $('stamp').textContent = 'Plan: ' + state.info.src + (state.info.at ? ' · ' + state.info.at : '');
+    $('stamp').textContent = t.days.length ? 'Plan: ' + state.info.src + (state.info.at ? ' · ' + state.info.at : '') : 'No plan loaded';
+  }
+
+  function persistText(){
+    if (state.persist === 'yes') return 'The browser keeps this data (persistent storage granted).';
+    if (state.persist === 'no') return 'The browser may clear this data when the device is low on space. Installing the app to the home screen makes that less likely. Keep the published link set, or save a copy below.';
+    return 'This browser does not report whether saved data is protected.';
+  }
+  function checkPersist(ask){
+    if (!(navigator.storage && navigator.storage.persisted)) return;
+    navigator.storage.persisted().then(function(p){
+      if (p || !ask || !navigator.storage.persist) return p;
+      return navigator.storage.persist();
+    }).then(function(g){
+      state.persist = g ? 'yes' : 'no';
+      var el = $('persist'); if (el) el.textContent = persistText();
+    }).catch(function(){});
+  }
+  function saveCopy(){
+    var txt = state.csv || sget(KEY.csv);
+    if (!txt) { state.msg = 'Nothing to save yet.'; render(); return; }
+    var url = URL.createObjectURL(new Blob(['﻿' + txt], { type: 'text/csv;charset=utf-8' }));
+    var a = document.createElement('a'); a.href = url; a.download = 'trip-plan.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
   }
 
   function currentUrl(){ return sget(KEY.url) || DEFAULT_URL; }
   function refresh(){
     var u = currentUrl();
-    if (!u || navigator.onLine === false || state.tab === 'data') return;
+    if (!u || navigator.onLine === false || (state.tab === 'data' && state.trip.days.length)) return;
     fetch(u, { cache: 'no-store' }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
       .then(function(t){
         if (!t || t === sget(KEY.csv) || !buildTrip(t).days.length) return;
-        var keep = state.sel;
-        if (load(t, 'published link', true)) { state.sel = Math.min(keep, state.trip.days.length - 1); state.msg = ''; render(); }
+        var keep = state.sel, wasEmpty = !state.trip.days.length;
+        if (load(t, 'published link', true)) {
+          state.msg = '';
+          if (wasEmpty) { state.tab = 'day'; initSel(); } else state.sel = Math.min(keep, state.trip.days.length - 1);
+          render();
+        }
       })
       .catch(function(){});
   }
@@ -426,8 +343,8 @@ function buildTrip(text){
       ds[idx].items.forEach(function(it){ if (!next && it.time && it.time.start > n.min) next = it; });
       if (next) {
         var left = next.time.start - n.min, rel = left >= 60 ? 'in ' + Math.floor(left / 60) + ' h ' + (left % 60 ? left % 60 + ' min' : '') : 'in ' + left + ' min';
-        el = h('div', { class: 'banner' + (next.time.crit ? ' crit' : '') }, h('span', { class: 'k', text: 'NEXT' }),
-          h('span', { class: 't', text: fmt(next.time.start) + '  ' + itemText(next) }), h('span', { class: 'r', text: rel }));
+        el = h('div', { class: 'banner' + (next.crit ? ' crit' : '') }, h('span', { class: 'k', text: 'NEXT' }),
+          h('span', { class: 't', text: lineText(next) }), h('span', { class: 'r', text: rel }));
       } else el = h('div', { class: 'banner' }, h('span', { class: 'k', text: 'TODAY' }), h('span', { class: 't', text: 'Nothing timed left' }));
     } else {
       var dated = ds.filter(function(d){ return d.iso; });
@@ -439,42 +356,49 @@ function buildTrip(text){
     b.appendChild(el);
   }
 
+  function viewEmpty(){
+    var go = h('button', { type: 'button', class: 'btn primary', text: 'Open Data tab' });
+    go.addEventListener('click', function(){ state.tab = 'data'; render(); });
+    return h('div', { class: 'card' }, h('div', { class: 'empty', text: 'No plan loaded yet.' }), h('div', { class: 'btns' }, go));
+  }
+
   function viewDay(){
+    if (!state.trip.days.length) return viewEmpty();
     var t = state.trip, d = t.days[state.sel], n = now();
     var root = h('div', { class: 'list' });
     var strip = h('div', { class: 'strip', role: 'group', 'aria-label': 'Days' });
     t.days.forEach(function(x, i){
-      var b = h('button', { type: 'button', class: 'dchip' + (i === state.sel ? ' on' : '') + (x.iso === n.iso ? ' today' : ''), 'aria-pressed': i === state.sel ? 'true' : 'false', 'aria-label': 'Day ' + x.n + ', ' + x.wd + ' ' + x.short },
-        h('span', { class: 'wd' + (x.weekend ? ' we' : ''), text: x.wd }), h('span', { class: 'dom', text: x.dom || x.n }), h('span', { class: 'bar' + (x.show ? ' show' : '') }));
+      var b = h('button', { type: 'button', class: 'dchip' + (i === state.sel ? ' on' : '') + (x.iso && x.iso === n.iso ? ' today' : ''), 'aria-pressed': i === state.sel ? 'true' : 'false', 'aria-label': 'Day ' + x.n + ', ' + x.wd + ' ' + x.dateText },
+        h('span', { class: 'wd' + (x.weekend ? ' we' : ''), text: x.wd }), h('span', { class: 'dom', text: x.dom || x.n }));
       b.addEventListener('click', function(){ state.sel = i; render(); });
       strip.appendChild(b);
     });
     root.appendChild(strip);
 
     var card = h('section', { class: 'card' },
-      h('div', null, h('div', { class: 'dayno', text: 'Day ' + d.n + ' of ' + t.days.length + (d.iso === n.iso ? ' · today' : '') }),
-        h('h2', { class: d.show ? 'show' : '', text: d.place || '–' }),
-        h('div', { class: 'date', text: d.wd ? d.wd + ' ' + d.short + d.iso.slice(0, 4) : '' })));
+      h('div', null, h('div', { class: 'dayno', text: 'Day ' + d.n + ' of ' + t.days.length + (d.iso && d.iso === n.iso ? ' · today' : '') }),
+        h('h2', { text: d.place || '–' }),
+        h('div', { class: 'date', text: (d.wd ? d.wd + ' ' : '') + d.dateText })));
     if (!d.items.length && !d.pool.length) card.appendChild(h('div', { class: 'empty', text: 'Nothing planned' }));
     d.items.forEach(function(it){
-      if (it.plain) { card.appendChild(h('div', { class: 'row' }, h('span'), h('span'), h('div', { class: 'what' }, h('span', { class: 'title', text: it.title })))); return; }
-      var crit = it.time && it.time.crit;
+      if (it.plain) { card.appendChild(h('div', { class: 'row' }, h('span'), h('div', { class: 'what' }, h('span', { class: 'title', text: it.text })))); return; }
       var done = d.iso === n.iso && it.time && (it.time.end !== null ? it.time.end : it.time.start) < n.min;
-      var tm = h('div', { class: 'time' + (crit ? ' crit' : '') });
-      if (it.time) { tm.appendChild(document.createTextNode(fmt(it.time.start))); if (it.time.end !== null) tm.appendChild(h('small', { text: '➔ ' + fmt(it.time.end) })); }
-      var what = h('div', { class: 'what' + (crit ? ' crit' : '') }, h('span', { class: 'title' }, it.legs ? routeNode(it.legs) : it.title));
-      if (it.note) what.appendChild(h('span', { class: 'note' }, it.noteLegs ? routeNode(it.noteLegs) : it.note));
-      if (it.map) what.appendChild(h('a', { class: 'link', href: mapUrl(it.map), target: '_blank', rel: 'noopener', text: 'Open in Maps' }));
-      card.appendChild(h('div', { class: 'row' + (done ? ' done' : '') }, tm, h('span', { class: 'ico', text: it.legs ? '' : emo(it.icon) }), what));
+      var what = h('div', { class: 'what' + (it.crit ? ' crit' : '') });
+      if (it.title) what.appendChild(h('span', { class: 'title', text: it.title }));
+      it.notes.forEach(function(x){ what.appendChild(h('span', { class: 'note', text: x })); });
+      it.maps.forEach(function(q){ what.appendChild(h('a', { class: 'link', href: mapUrl(q), target: '_blank', rel: 'noopener', text: 'Open in Maps' })); });
+      card.appendChild(h('div', { class: 'row' + (done ? ' done' : '') }, h('div', { class: 'time' + (it.crit ? ' crit' : ''), text: it.timeText }), what));
     });
     if (d.pool.length) {
       var chips = h('div', { class: 'chips' }, h('span', { class: 'dayno', text: 'Pool' }));
-      d.pool.forEach(function(p){ chips.appendChild(h('a', { class: 'link', style: 'margin-top:0', href: mapUrl(p.map), target: '_blank', rel: 'noopener', text: p.name })); });
+      d.pool.forEach(function(p){
+        chips.appendChild(p.map ? h('a', { class: 'chip', href: mapUrl(p.map), target: '_blank', rel: 'noopener', text: p.name }) : h('span', { class: 'chip', text: p.name }));
+      });
       card.appendChild(chips);
     }
     root.appendChild(card);
 
-    var prev = h('button', { type: 'button', text: '← Previous' }), next = h('button', { type: 'button', class: 'primary', text: 'Next day ➔' });
+    var prev = h('button', { type: 'button', text: '← Previous' }), next = h('button', { type: 'button', class: 'primary', text: 'Next day →' });
     prev.disabled = state.sel === 0; next.disabled = state.sel === t.days.length - 1;
     prev.addEventListener('click', function(){ state.sel--; render(); });
     next.addEventListener('click', function(){ state.sel++; render(); });
@@ -482,24 +406,21 @@ function buildTrip(text){
     return root;
   }
 
-  function summary(d){
-    var parts = [];
-    d.items.forEach(function(it){
-      if (it.plain || !it.time) return;
-      if (it.time.crit) parts.push(fmt(it.time.start) + ' ' + itemText(it));
-    });
-    if (!parts.length) d.items.forEach(function(it){ if (it.time && parts.length < 2) parts.push(fmt(it.time.start) + ' ' + itemText(it)); });
-    if (!parts.length && d.pool.length) parts.push('Pool: ' + d.pool.map(function(p){ return p.name; }).join(', '));
-    return parts.join(' · ');
-  }
-
   function viewAll(){
+    if (!state.trip.days.length) return viewEmpty();
     var n = now(), root = h('div', { class: 'list' });
     state.trip.days.forEach(function(d, i){
-      var b = h('button', { type: 'button', class: 'item' + (d.iso === n.iso ? ' today' : '') },
-        h('div', { class: 'd' }, h('span', { class: 'wd' + (d.weekend ? ' we' : ''), style: 'font-size:12px;color:var(--' + (d.weekend ? 'we' : 'muted') + ')', text: d.wd }),
-          h('span', { class: 'dom', style: 'font-family:var(--mono);font-size:20px;font-weight:600', text: d.dom || d.n })),
-        h('div', null, h('div', { class: 'pl' + (d.show ? ' show' : ''), text: d.place || '–' }), h('div', { class: 'sum', text: summary(d) || 'Nothing planned' })));
+      var sum = h('div', { class: 'sum' });
+      d.items.forEach(function(it){
+        var txt = lineText(it);
+        if (txt.trim()) sum.appendChild(h('div', { class: 'ln' + (it.crit ? ' crit' : ''), text: txt }));
+      });
+      if (d.pool.length) sum.appendChild(h('div', { class: 'ln', text: 'Pool: ' + d.pool.map(function(p){ return p.name; }).join(', ') }));
+      if (!sum.childNodes.length) sum.textContent = 'Nothing planned';
+      var b = h('button', { type: 'button', class: 'item' + (d.iso && d.iso === n.iso ? ' today' : '') },
+        h('div', { class: 'd' }, h('span', { style: 'font-size:12px;color:var(--' + (d.weekend ? 'we' : 'muted') + ')', text: d.wd }),
+          h('span', { style: 'font-family:var(--mono);font-size:20px;font-weight:600', text: d.dom || d.n })),
+        h('div', null, h('div', { class: 'pl', text: d.place || '–' }), sum));
       b.addEventListener('click', function(){ state.sel = i; state.tab = 'day'; render(); });
       root.appendChild(b);
     });
@@ -508,8 +429,7 @@ function buildTrip(text){
 
   function viewData(){
     var root = h('div', { class: 'list' });
-    var loaded = h('div', { class: 'msg' }, state.msg || ('Showing ' + state.trip.days.length + ' days from ' + state.info.src + (state.info.at ? ', loaded ' + state.info.at : '') + '.'));
-    root.appendChild(loaded);
+    root.appendChild(h('div', { class: 'msg', text: state.msg || (state.trip.days.length ? 'Showing ' + state.trip.days.length + ' days from ' + state.info.src + (state.info.at ? ', loaded ' + state.info.at : '') + '.' : 'No plan loaded yet. Load a CSV file, paste text or fetch your published link.') }));
 
     var file = h('input', { type: 'file', id: 'file', accept: '.csv,.tsv,.txt,text/csv,text/plain' });
     file.addEventListener('change', function(){
@@ -527,7 +447,7 @@ function buildTrip(text){
     fb.addEventListener('click', function(){
       var u = url.value.trim(); if (!u) return;
       sset(KEY.url, u);
-      fetch(u).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
+      fetch(u, { cache: 'no-store' }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
         .then(function(t){ load(t, 'published link', true); })
         .catch(function(){ state.msg = 'Could not fetch the link. Check the address and your connection. The saved copy stays in use.'; render(); });
     });
@@ -537,8 +457,22 @@ function buildTrip(text){
       h('div', { class: 'field' }, h('label', { class: 'lab', for: 'url', text: 'Published link' }), url, h('div', { class: 'btns' }, fb),
         h('div', { class: 'hint', text: 'The page also fetches this link by itself each time it opens while online. Google can take a few minutes to publish sheet edits.' }))));
 
+    var sb = h('button', { type: 'button', class: 'btn', text: 'Save a copy (CSV)' });
+    sb.addEventListener('click', saveCopy);
+    root.appendChild(h('div', { class: 'card' },
+      h('div', { class: 'lab', text: 'Saved on this device' }),
+      h('div', { class: 'hint', id: 'persist', text: persistText() }),
+      h('div', { class: 'btns' }, sb)));
+
+    var rules = h('ul', { class: 'rules' });
+    [['time ; text ; note', 'One line per entry. Parts are split at ";".'], ['!10:15', 'A "!" in front of the time makes that line red.'], ['>', 'Shown as ➔.'], ['@Place name', 'A part that starts with @ becomes an "Open in Maps" button. In the Pool column the place becomes a link.']].forEach(function(r){
+      rules.appendChild(h('li', null, h('code', { text: r[0] }), ' ' + r[1]));
+    });
+    rules.appendChild(h('li', { text: 'Everything else, including any emoji, is shown exactly as written.' }));
+    root.appendChild(h('div', { class: 'card' }, h('div', { class: 'lab', text: 'How lines are read' }), rules));
+
     var errs = state.trip.issues.filter(function(x){ return x.level === 'error'; }).length, warns = state.trip.issues.length - errs;
-    var ic = h('div', { class: 'card' }, h('div', { class: 'lab', text: state.trip.issues.length ? 'Lines to fix: ' + errs + ' errors, ' + warns + ' warnings' : 'Lines to fix' }));
+    var ic = h('div', { class: 'card' }, h('div', { class: 'lab', text: state.trip.issues.length ? 'Lines to check: ' + errs + ' errors, ' + warns + ' warnings' : 'Lines to check' }));
     if (!state.trip.issues.length) ic.appendChild(h('div', { class: 'empty', text: 'Every line was read cleanly.' }));
     state.trip.issues.forEach(function(x){
       ic.appendChild(h('div', { class: 'issue ' + x.level }, h('b', { text: x.level }), 'Day ' + x.day + ': ' + x.msg, x.raw ? h('code', { text: x.raw }) : null));
@@ -552,8 +486,11 @@ function buildTrip(text){
     ct.addEventListener('change', setClock);
     var real = h('button', { type: 'button', class: 'btn', text: 'Use real time' });
     real.addEventListener('click', function(){ state.clock = null; initSel(); render(); });
-    var rs = h('button', { type: 'button', class: 'btn', text: 'Reset to built-in sample' });
-    rs.addEventListener('click', function(){ load(sampleCsv, 'Built-in sample', false); try { localStorage.removeItem(KEY.csv); } catch (e) {} });
+    var rs = h('button', { type: 'button', class: 'btn', text: 'Clear saved plan' });
+    rs.addEventListener('click', function(){
+      try { localStorage.removeItem(KEY.csv); localStorage.removeItem(KEY.src); localStorage.removeItem(KEY.at); } catch (e) {}
+      state.trip = { title: '', days: [], issues: [] }; state.info = { src: '', at: '' }; state.csv = ''; state.msg = 'Saved plan cleared.'; render();
+    });
     root.appendChild(h('div', { class: 'card' },
       h('div', { class: 'lab', text: 'Test the clock' }),
       h('div', { class: 'hint', text: 'Pretend it is a day and time during the trip to see the next-up banner and the greyed-out past items.' }),
@@ -581,8 +518,9 @@ function buildTrip(text){
   if (saved && buildTrip(saved).days.length) {
     state.trip = buildTrip(saved);
     state.info = { src: sget(KEY.src) || 'saved copy', at: sget(KEY.at) || '' };
+    state.csv = saved; checkPersist(true);
     initSel(); render();
-  } else load(sampleCsv, 'Built-in sample', false);
+  } else { state.tab = 'data'; checkPersist(false); render(); }
 
   refresh();
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) refresh(); });
