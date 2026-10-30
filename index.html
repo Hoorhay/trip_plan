@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f6f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1110" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Trip Plan">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Trip Plan</title>
+<style>
+/* Layout: one narrow column built for a thumb. Day strip on top, one day card below, a banner for what is next. */
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --ink:#1a1d19; --muted:#5a6158; --line:#dde1d7;
+  --accent:#3b7a1d; --accent-ink:#ffffff; --warn:#8f5a00; --warn-bg:#fbf1da;
+  --err:#b3261e; --err-bg:#fbe6e3; --crit:#c4271c; --crit-bg:#fbe6e3; --show:#a85a00; --we:#8f6b00; --today:#1a1d19;
+  --font:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1110; --surface:#181b19; --ink:#f4f4f1; --muted:#9ea39c; --line:#2a2e2b;
+  --accent:#6fb03c; --accent-ink:#0d1a07; --warn:#e8b93a; --warn-bg:#2b2410;
+  --err:#ff8a7d; --err-bg:#2f1815; --crit:#ff6b5e; --crit-bg:#2a1513; --show:#ff9f1a; --we:#e0b030; --today:#f4f4f1; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1110; --surface:#181b19; --ink:#f4f4f1; --muted:#9ea39c; --line:#2a2e2b;
+  --accent:#6fb03c; --accent-ink:#0d1a07; --warn:#e8b93a; --warn-bg:#2b2410;
+  --err:#ff8a7d; --err-bg:#2f1815; --crit:#ff6b5e; --crit-bg:#2a1513; --show:#ff9f1a; --we:#e0b030; --today:#f4f4f1; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;margin:0;
+  padding-block:calc(18px + env(safe-area-inset-top,0px)) calc(36px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.app{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.04em}
+h1{margin:2px 0 0;font-size:28px;line-height:1.1;font-weight:600;text-wrap:balance}
+.route{font-size:14px;color:var(--muted);margin-top:2px}
+button,input,textarea{font-family:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;gap:6px}
+.tab{flex:1;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:500}
+.tab[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.banner{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.banner.crit{background:var(--crit-bg);border-color:transparent}
+.banner .k{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+.banner.crit .k{color:var(--crit)}
+.banner .t{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.banner .r{margin-left:auto;font-size:13px;color:var(--muted);white-space:nowrap}
+.strip{position:relative;display:flex;gap:6px;overflow-x:auto;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:2px max(16px,env(safe-area-inset-left,0px)) 6px}
+.dchip{flex:0 0 48px;height:68px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0}
+.dchip .wd{font-size:12px;font-weight:500;color:var(--muted)} .dchip .wd.we{color:var(--we)}
+.dchip .dom{font-family:var(--mono);font-size:18px;font-weight:600}
+.dchip .bar{width:20px;height:3px;border-radius:2px;background:transparent} .dchip .bar.show{background:var(--show)}
+.dchip.today{box-shadow:inset 0 0 0 2px var(--today)}
+.dchip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dchip.on .wd{color:var(--accent-ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.dayno{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+h2{margin:0;font-size:22px;line-height:1.2;font-weight:600}
+h2.show{color:var(--show)}
+.date{font-size:14px;color:var(--muted)}
+.row{display:grid;grid-template-columns:56px 24px minmax(0,1fr);column-gap:10px;padding:11px 0;border-top:1px solid var(--line);align-items:start}
+.time{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.3}
+.time small{display:block;font-size:12px;font-weight:500;color:var(--muted)}
+.time.crit{color:var(--crit)}
+.ico{text-align:center;line-height:1.35}
+.what{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;overflow-wrap:anywhere}
+.what.crit .title{font-weight:600}
+.note{font-size:14px;color:var(--muted)}
+.arrow{color:var(--muted);margin:0 3px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 4px 0 1px;border:1px solid var(--muted)}
+.row.done .title,.row.done .time{color:var(--muted)}
+.link{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;margin-top:4px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--line);align-items:center}
+.nav{display:flex;gap:10px}
+.nav button{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:500}
+.nav button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.nav button:disabled{opacity:.4;cursor:default}
+.empty{color:var(--muted);font-size:15px}
+.list{display:flex;flex-direction:column;gap:10px}
+.item{display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;align-items:center;width:100%;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface)}
+.item.today{border-color:var(--accent)}
+.item .d{display:flex;flex-direction:column;align-items:center}
+.item .sum{font-size:14px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.item .pl{font-size:16px;font-weight:600}
+.item .pl.show{color:var(--show)}
+.field{display:flex;flex-direction:column;gap:6px}
+.lab{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=date],input[type=time],textarea{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:8px 12px;font-size:15px}
+textarea{font-family:var(--mono);font-size:13px;min-height:110px;white-space:pre}
+.btn{min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:15px;font-weight:500}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.msg{padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:14px}
+.issue{padding:10px 12px;border-radius:10px;font-size:14px;background:var(--warn-bg)}
+.issue.error{background:var(--err-bg)}
+.issue b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-right:6px;color:var(--warn)}
+.issue.error b{color:var(--err)}
+.issue code{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin-top:2px}
+.hint{font-size:13px;color:var(--muted)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="eyebrow" id="range"></div>
+    <h1 id="title">Trip</h1>
+    <div class="route" id="route"></div>
+    <div class="hint" id="stamp" style="margin-top:4px"></div>
+  </header>
+  <div id="banner"></div>
+  <nav class="tabs" aria-label="Views">
+    <button type="button" class="tab" data-tab="day">Day</button>
+    <button type="button" class="tab" data-tab="all">All days</button>
+    <button type="button" class="tab" data-tab="data">Data</button>
+  </nav>
+  <main id="view"></main>
+</div>
+
+<script type="text/plain" id="sample-csv">Whisky Show 2027,,,,,,
+#,Deň,Dátum,Miesto,Aktivity,Odhady času,Pool
+1,so,25.9.2027,KSC ➔ EDI,"!07:08 ; 🏠 Z domu
+07:18 ; Hl. pošta > 🚊 #2 > Staničné nám.
+07:48-16:18 ; KSC > 🚅 RJ1012 > PRG
+15:00 ; 🏨 Leonardo Haymarket",,
+2,ne,26.9.2027,EDI,,,"SMWS Vaults
+Bow Bar"
+3,po,27.9.2027,EDI,,,"SMWS Vaults
+Bow Bar"
+4,ut,28.9.2027,EDI,,,"SMWS Vaults
+Bow Bar"
+5,st,29.9.2027,EDI ➔ LON,,,
+6,št,30.9.2027,Warner Bros Harry Potter,"!07:20 ; 🏠 Z hotela
+07:30-08:30 ; Ⓜ️ B > Zličín > 🚌 #100 > PRG T2
+!10:15 ; ⏰ Gate closes
+10:35-11:30 ; ✈️ FR1014 ; PRG > STN
+; 🚆 STN Express > Liverpool St. > Ⓜ️ Circle > Tower Hill
+!16:30 ; 🥃 SMWS",,
+7,pi,1.10.2027,Whisky Show,"!15:00 ; 🧍 do radu
+16:00-21:00 ; 🥃 WS
+; 🍺 pivo",,
+8,so,2.10.2027,Whisky Show,"!10:30 ; 🧍 do radu
+11:30-18:00 ; 🥃 WS",,
+9,ne,3.10.2027,Whisky Show,"!10:30 ; 🧍 do radu
+11:30-18:00 ; 🥃 WS",,
+10,po,4.10.2027,➔ KE,"08:45-10:00 ; Tower Hill > Ⓜ️ Circle/District > Hammersmith > Ⓜ️ Piccadilly > LHR
+12:10-14:50 ; ✈️ LX319 ; LHR > ZRH
+17:10-18:55 ; ✈️ LX1490 ; ZRH > KE",,
+TODO,,,,,,
+</script>
+
+<script>
+/*PURE-START*/
+var ICONS = {'🏠':1,'🏨':1,'🚆':1,'🚌':1,'🚊':1,'Ⓜ':1,'✈':1,'⏰':1,'🥃':1,'🍺':1,'🧍':1,'🚶':1,'🍽':1};
+var ALIAS = {'🚅':'🚆','🚄':'🚆','🚈':'🚆','🚉':'🚆','🚇':'Ⓜ','🚍':'🚌','🚋':'🚊'};
+var SERVICES = {'🚆':1,'🚌':1,'🚊':1,'Ⓜ':1,'✈':1,'🚶':1};
+var LINES = {'Circle':'#f5b800','District':'#1a9a3c','Piccadilly':'#1f4fd1','Central':'#e1251b','Northern':'#222222','Victoria':'#0099d8','Jubilee':'#868f98','Bakerloo':'#a45a2a','Metropolitan':'#9b0058','Hammersmith & City':'#e885a5','Elizabeth':'#6950a1'};
+var CITIES = {EDI:'Edinburgh',LON:'London',KSC:'Košice',KE:'Košice',PRG:'Prague',STN:'London Stansted',LHR:'London Heathrow'};
+var PICTO = /^[\p{Extended_Pictographic}Ⓜ]/u;
+var WD = ['ne','po','ut','st','št','pi','so'];
+
+function pad(n){ return String(n).padStart(2, '0'); }
+function canon(ch){ return ALIAS[ch] || ch; }
+function trim(s){ return s.trim(); }
+/* Matching strips U+FE0F; drawing puts it back so characters like the plane and the circled M show as colour emoji. */
+function emo(ch){ return (ch && ch.codePointAt(0) > 255 && /\p{Emoji}/u.test(ch) && !/\p{Emoji_Presentation}/u.test(ch)) ? ch + '️' : ch; }
+
+function parseCSV(t){
+  t = t.replace(/^﻿/, '');
+  var first = t.split('\n')[0] || '';
+  var D = (first.split('\t').length > first.split(',').length) ? '\t' : ',';
+  var rows = [], row = [], f = '', q = false;
+  for (var i = 0; i < t.length; i++) {
+    var c = t[i];
+    if (q) { if (c === '"') { if (t[i+1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === D) { row.push(f); f = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && t[i+1] === '\n') i++; row.push(f); f = ''; rows.push(row); row = []; }
+    else f += c;
+  }
+  if (f !== '' || row.length) { row.push(f); rows.push(row); }
+  return rows;
+}
+
+function takeIcon(str, warn){
+  var ch = Array.from(str)[0] || '';
+  if (ICONS[ch] || ALIAS[ch]) return { icon: ch, rest: str.slice(ch.length).trim() };
+  if (ch && PICTO.test(ch)) { warn('Unknown icon "' + ch + '". Use a known one or remove it.'); return { icon: ch, rest: str.slice(ch.length).trim() }; }
+  return { icon: '', rest: str };
+}
+
+function lev(a, b){
+  var d = [], i, j;
+  for (i = 0; i <= a.length; i++) d[i] = [i];
+  for (j = 1; j <= b.length; j++) d[0][j] = j;
+  for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function nearLine(n){
+  var best = null;
+  Object.keys(LINES).forEach(function(k){ if (k !== n && lev(n.toLowerCase(), k.toLowerCase()) <= 2) best = k; });
+  return best;
+}
+
+function parseRoute(str, warn, fail){
+  if (str.indexOf('>') === -1) return null;
+  return str.split('>').map(function(p){
+    var t = takeIcon(p.trim(), warn);
+    var name = t.rest, ci = canon(t.icon), ride = !!SERVICES[ci];
+    var m = name.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+    if (m && /[A-Za-z]/.test(m[2]) && !/[~\d]/.test(m[2])) {
+      warn('Write "' + m[2] + '" as its own step: Place > ' + (t.icon || 'Ⓜ') + ' ' + m[2] + ' > Next place.');
+      name = m[1];
+    }
+    if (!name) fail('Empty step in a route. Check the ">" signs.');
+    var names = ride ? name.split('/').map(trim) : [name];
+    if (ci === 'Ⓜ') names.forEach(function(n){
+      var near = LINES[n] ? null : nearLine(n);
+      if (near) warn('Unknown line "' + n + '". Did you mean ' + near + '?');
+    });
+    return { icon: t.icon, ride: ride, names: names };
+  });
+}
+
+function parseActivity(raw, report, ctx, city){
+  var line = raw.replace(/️/g, '').trim();
+  if (!line) return null;
+  function warn(m){ report('warning', m); }
+  function fail(m){ report('error', m); }
+  var item = { time: null, icon: '', title: '', legs: null, note: '', noteLegs: null, map: '', plain: false };
+  var p0 = '', title = '', note = '';
+  if (line.indexOf(';') === -1) {
+    var o = line.match(/^(!)?(\d{1,2}:\d{2})(?:\s*-\s*(\d{1,2}:\d{2}))?\s+(\S.*)$/);
+    if (o) { p0 = (o[1] || '') + o[2] + (o[3] ? '-' + o[3] : ''); title = o[4]; warn('Missing ";" after the time. Read as time and title.'); }
+    else {
+      warn(/^!?\d/.test(line) ? 'Starts like a time but cannot be read. Check the time and add ";". Shown as plain text.' : 'Not in "time ; title" form. Shown as plain text.');
+      item.plain = true; item.title = line; return item;
+    }
+  } else {
+    var parts = line.split(';').map(trim);
+    p0 = parts[0]; title = parts[1] || ''; note = parts[2] || '';
+    if (parts.length > 3) warn('More than three fields. Everything after the third is ignored.');
+  }
+  if (p0 === '!') warn('Critical marker "!" needs a time.');
+  else if (p0 !== '') {
+    var m = p0.match(/^(!)?\s*(\d{1,2}):(\d{2})(?:\s*-\s*(\d{1,2}):(\d{2}))?$/);
+    if (!m) fail('First field must be a time like 07:30 or 07:30-08:30, or be empty.');
+    else if (Number(m[2]) > 23 || Number(m[3]) > 59 || (m[4] !== undefined && (Number(m[4]) > 23 || Number(m[5]) > 59))) fail('That time does not exist: ' + p0);
+    else {
+      var s = Number(m[2]) * 60 + Number(m[3]), e = m[4] === undefined ? null : Number(m[4]) * 60 + Number(m[5]);
+      item.time = { crit: !!m[1], start: s, end: e };
+      if (e !== null && e < s) warn('End time is earlier than the start time.');
+      if (ctx.prev !== null && s < ctx.prev) warn('Starts earlier than the timed line above.');
+      ctx.prev = s;
+    }
+  }
+  if (!title) fail('Missing title after the time.');
+  if (title.indexOf('>') !== -1) { item.legs = parseRoute(title, warn, fail); item.title = title; }
+  else { var ti = takeIcon(title, warn); item.icon = ti.icon; item.title = ti.rest; }
+  if (note[0] === '@') { item.map = note.slice(1).trim(); if (!item.map) fail('"@" needs a place to search for.'); }
+  else { item.note = note; item.noteLegs = parseRoute(note, warn, fail); }
+  if (!item.map && canon(item.icon) === '🏨' && city && item.title) item.map = item.title + ' ' + city;
+  return item;
+}
+
+function cityOf(place){
+  var found = null, re = /\b(EDI|LON|KSC|PRG|KE)\b/g, m;
+  while ((m = re.exec(place)) !== null) found = CITIES[m[1]];
+  return found;
+}
+function norm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim(); }
+
+function buildTrip(text){
+  var rows = parseCSV(text), issues = [];
+  var title = ((rows[0] && rows[0][0]) || '').trim() || 'Trip';
+  var hi = -1;
+  for (var i = 0; i < rows.length; i++) if ((rows[i][0] || '').trim() === '#') { hi = i; break; }
+  var col = { date: 2, place: 3, act: 4, pool: 6 };
+  if (hi >= 0) rows[hi].forEach(function(h, k){
+    var n = norm(h);
+    if (n === 'datum' || n === 'date') col.date = k;
+    if (n === 'miesto' || n === 'place') col.place = k;
+    if (n === 'aktivity' || n === 'activities') col.act = k;
+    if (n === 'pool') col.pool = k;
+  });
+  var days = [];
+  rows.slice(hi + 1).forEach(function(r){
+    if (!/^\d+$/.test((r[0] || '').trim())) return;
+    var day = { n: r[0].trim(), iso: '', short: '', dom: '', wd: '', weekend: false, place: (r[col.place] || '').trim(), show: false, items: [], pool: [] };
+    function add(level, msg, raw){ issues.push({ level: level, msg: msg, day: day.n, raw: raw || '' }); }
+    var dm = (r[col.date] || '').trim().match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$/) || null;
+    var im = (r[col.date] || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    var y, mo, d;
+    if (dm) { d = +dm[1]; mo = +dm[2]; y = +dm[3]; } else if (im) { y = +im[1]; mo = +im[2]; d = +im[3]; }
+    if (y) {
+      day.iso = y + '-' + pad(mo) + '-' + pad(d);
+      var dt = new Date(Date.UTC(y, mo - 1, d));
+      day.wd = WD[dt.getUTCDay()]; day.weekend = dt.getUTCDay() === 0 || dt.getUTCDay() === 6;
+      day.dom = String(d); day.short = d + '.' + mo + '.';
+    } else add('error', 'Date not understood. Use 25.9.2027 or 2027-09-25.', r[col.date] || '');
+    day.show = /^Whisky Show/i.test(day.place);
+    var city = cityOf(day.place), ctx = { prev: null };
+    String(r[col.act] || '').split(/\r?\n/).forEach(function(raw){
+      var it = parseActivity(raw, function(l, m){ add(l, m, raw.trim()); }, ctx, city);
+      if (it) day.items.push(it);
+    });
+    String(r[col.pool] || '').split(/\r?\n/).forEach(function(raw){
+      var parts = raw.replace(/️/g, '').split(';').map(trim);
+      if (!parts[0]) return;
+      var q = parts[1] && parts[1][0] === '@' ? parts[1].slice(1).trim() : parts[0] + (city ? ' ' + city : '');
+      day.pool.push({ name: parts[0], map: q });
+    });
+    days.push(day);
+  });
+  return { title: title, days: days, issues: issues };
+}
+/*PURE-END*/
+
+(function(){
+  /* Put your published CSV link between the quotes. The page then loads it on its own every time it opens online. */
+  var DEFAULT_URL = '';
+  var KEY = { csv: 'pocket.csv', at: 'pocket.at', src: 'pocket.src', url: 'pocket.url' };
+  function sget(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function sset(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+  function $(id){ return document.getElementById(id); }
+  function h(tag, attrs){
+    var el = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function(k){
+      if (k === 'class') el.className = attrs[k];
+      else if (k === 'text') el.textContent = attrs[k];
+      else el.setAttribute(k, attrs[k]);
+    });
+    for (var i = 2; i < arguments.length; i++) { var c = arguments[i]; if (c) el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); }
+    return el;
+  }
+  var sampleCsv = $('sample-csv').textContent.replace(/^\n/, '');
+  var state = { trip: null, tab: 'day', sel: 0, clock: null, info: { src: 'Built-in sample', at: '' }, msg: '' };
+
+  function now(){
+    var d = new Date();
+    var iso = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    var min = d.getHours() * 60 + d.getMinutes();
+    if (state.clock) {
+      if (state.clock.date) iso = state.clock.date;
+      if (state.clock.time) { var p = state.clock.time.split(':'); min = Number(p[0]) * 60 + Number(p[1]); }
+    }
+    return { iso: iso, min: min };
+  }
+  function diffDays(a, b){
+    var pa = a.split('-'), pb = b.split('-');
+    return Math.round((Date.UTC(+pb[0], +pb[1] - 1, +pb[2]) - Date.UTC(+pa[0], +pa[1] - 1, +pa[2])) / 86400000);
+  }
+  function fmt(m){ return pad(Math.floor(m / 60)) + ':' + pad(m % 60); }
+  function mapUrl(q){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q); }
+  function itemText(it){
+    if (it.legs) return it.legs.map(function(l){ return (l.icon ? emo(l.icon) + ' ' : '') + l.names.join('/'); }).join(' ➔ ');
+    return (it.icon ? emo(it.icon) + ' ' : '') + it.title;
+  }
+  function routeNode(legs){
+    var box = h('span');
+    legs.forEach(function(l, i){
+      if (i) box.appendChild(h('span', { class: 'arrow', text: '➔' }));
+      if (l.icon) box.appendChild(document.createTextNode(emo(l.icon) + ' '));
+      l.names.forEach(function(n, j){
+        if (j) box.appendChild(document.createTextNode('/'));
+        if (l.ride && LINES[n]) box.appendChild(h('span', { class: 'dot', style: 'background:' + LINES[n] }));
+        box.appendChild(document.createTextNode(n));
+      });
+    });
+    return box;
+  }
+
+  function initSel(){
+    var n = now().iso, days = state.trip.days, k = -1;
+    for (var i = 0; i < days.length; i++) if (days[i].iso && days[i].iso >= n) { k = i; break; }
+    state.sel = k === -1 ? days.length - 1 : k;
+  }
+
+  function load(text, src, persist){
+    var trip = buildTrip(text);
+    if (!trip.days.length) { state.msg = 'No day rows found. The first column must hold the day numbers (1, 2, 3 …).'; render(); return false; }
+    state.trip = trip;
+    state.info = { src: src, at: new Date().toLocaleString() };
+    state.msg = 'Loaded ' + trip.days.length + ' days from ' + src + '.';
+    if (persist) { sset(KEY.csv, text); sset(KEY.src, src); sset(KEY.at, state.info.at); }
+    initSel(); render();
+    return true;
+  }
+
+  function renderHead(){
+    var t = state.trip, ds = t.days.filter(function(d){ return d.iso; });
+    $('title').textContent = t.title;
+    if (ds.length) {
+      var a = ds[0], b = ds[ds.length - 1];
+      $('range').textContent = a.short + ' – ' + b.short + b.iso.slice(0, 4);
+    } else $('range').textContent = '';
+    var places = t.days.map(function(d){ return d.place; }).filter(Boolean);
+    $('route').textContent = places.length ? places[0] + ' … ' + places[places.length - 1] : '';
+    $('stamp').textContent = 'Plan: ' + state.info.src + (state.info.at ? ' · ' + state.info.at : '');
+  }
+
+  function currentUrl(){ return sget(KEY.url) || DEFAULT_URL; }
+  function refresh(){
+    var u = currentUrl();
+    if (!u || navigator.onLine === false || state.tab === 'data') return;
+    fetch(u, { cache: 'no-store' }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function(t){
+        if (!t || t === sget(KEY.csv) || !buildTrip(t).days.length) return;
+        var keep = state.sel;
+        if (load(t, 'published link', true)) { state.sel = Math.min(keep, state.trip.days.length - 1); state.msg = ''; render(); }
+      })
+      .catch(function(){});
+  }
+
+  function renderBanner(){
+    var b = $('banner'); b.textContent = ''; b.className = '';
+    var t = state.trip, n = now(), idx = -1, ds = t.days;
+    for (var i = 0; i < ds.length; i++) if (ds[i].iso === n.iso) idx = i;
+    var el;
+    if (idx >= 0) {
+      var next = null;
+      ds[idx].items.forEach(function(it){ if (!next && it.time && it.time.start > n.min) next = it; });
+      if (next) {
+        var left = next.time.start - n.min, rel = left >= 60 ? 'in ' + Math.floor(left / 60) + ' h ' + (left % 60 ? left % 60 + ' min' : '') : 'in ' + left + ' min';
+        el = h('div', { class: 'banner' + (next.time.crit ? ' crit' : '') }, h('span', { class: 'k', text: 'NEXT' }),
+          h('span', { class: 't', text: fmt(next.time.start) + '  ' + itemText(next) }), h('span', { class: 'r', text: rel }));
+      } else el = h('div', { class: 'banner' }, h('span', { class: 'k', text: 'TODAY' }), h('span', { class: 't', text: 'Nothing timed left' }));
+    } else {
+      var dated = ds.filter(function(d){ return d.iso; });
+      if (!dated.length) return;
+      if (n.iso < dated[0].iso) { var k = diffDays(n.iso, dated[0].iso); el = h('div', { class: 'banner' }, h('span', { class: 'k', text: 'COUNTDOWN' }), h('span', { class: 't', text: 'Trip starts in ' + k + (k === 1 ? ' day' : ' days') })); }
+      else if (n.iso > dated[dated.length - 1].iso) el = h('div', { class: 'banner' }, h('span', { class: 'k', text: 'DONE' }), h('span', { class: 't', text: 'Trip finished' }));
+      else return;
+    }
+    b.appendChild(el);
+  }
+
+  function viewDay(){
+    var t = state.trip, d = t.days[state.sel], n = now();
+    var root = h('div', { class: 'list' });
+    var strip = h('div', { class: 'strip', role: 'group', 'aria-label': 'Days' });
+    t.days.forEach(function(x, i){
+      var b = h('button', { type: 'button', class: 'dchip' + (i === state.sel ? ' on' : '') + (x.iso === n.iso ? ' today' : ''), 'aria-pressed': i === state.sel ? 'true' : 'false', 'aria-label': 'Day ' + x.n + ', ' + x.wd + ' ' + x.short },
+        h('span', { class: 'wd' + (x.weekend ? ' we' : ''), text: x.wd }), h('span', { class: 'dom', text: x.dom || x.n }), h('span', { class: 'bar' + (x.show ? ' show' : '') }));
+      b.addEventListener('click', function(){ state.sel = i; render(); });
+      strip.appendChild(b);
+    });
+    root.appendChild(strip);
+
+    var card = h('section', { class: 'card' },
+      h('div', null, h('div', { class: 'dayno', text: 'Day ' + d.n + ' of ' + t.days.length + (d.iso === n.iso ? ' · today' : '') }),
+        h('h2', { class: d.show ? 'show' : '', text: d.place || '–' }),
+        h('div', { class: 'date', text: d.wd ? d.wd + ' ' + d.short + d.iso.slice(0, 4) : '' })));
+    if (!d.items.length && !d.pool.length) card.appendChild(h('div', { class: 'empty', text: 'Nothing planned' }));
+    d.items.forEach(function(it){
+      if (it.plain) { card.appendChild(h('div', { class: 'row' }, h('span'), h('span'), h('div', { class: 'what' }, h('span', { class: 'title', text: it.title })))); return; }
+      var crit = it.time && it.time.crit;
+      var done = d.iso === n.iso && it.time && (it.time.end !== null ? it.time.end : it.time.start) < n.min;
+      var tm = h('div', { class: 'time' + (crit ? ' crit' : '') });
+      if (it.time) { tm.appendChild(document.createTextNode(fmt(it.time.start))); if (it.time.end !== null) tm.appendChild(h('small', { text: '➔ ' + fmt(it.time.end) })); }
+      var what = h('div', { class: 'what' + (crit ? ' crit' : '') }, h('span', { class: 'title' }, it.legs ? routeNode(it.legs) : it.title));
+      if (it.note) what.appendChild(h('span', { class: 'note' }, it.noteLegs ? routeNode(it.noteLegs) : it.note));
+      if (it.map) what.appendChild(h('a', { class: 'link', href: mapUrl(it.map), target: '_blank', rel: 'noopener', text: 'Open in Maps' }));
+      card.appendChild(h('div', { class: 'row' + (done ? ' done' : '') }, tm, h('span', { class: 'ico', text: it.legs ? '' : emo(it.icon) }), what));
+    });
+    if (d.pool.length) {
+      var chips = h('div', { class: 'chips' }, h('span', { class: 'dayno', text: 'Pool' }));
+      d.pool.forEach(function(p){ chips.appendChild(h('a', { class: 'link', style: 'margin-top:0', href: mapUrl(p.map), target: '_blank', rel: 'noopener', text: p.name })); });
+      card.appendChild(chips);
+    }
+    root.appendChild(card);
+
+    var prev = h('button', { type: 'button', text: '← Previous' }), next = h('button', { type: 'button', class: 'primary', text: 'Next day ➔' });
+    prev.disabled = state.sel === 0; next.disabled = state.sel === t.days.length - 1;
+    prev.addEventListener('click', function(){ state.sel--; render(); });
+    next.addEventListener('click', function(){ state.sel++; render(); });
+    root.appendChild(h('div', { class: 'nav' }, prev, next));
+    return root;
+  }
+
+  function summary(d){
+    var parts = [];
+    d.items.forEach(function(it){
+      if (it.plain || !it.time) return;
+      if (it.time.crit) parts.push(fmt(it.time.start) + ' ' + itemText(it));
+    });
+    if (!parts.length) d.items.forEach(function(it){ if (it.time && parts.length < 2) parts.push(fmt(it.time.start) + ' ' + itemText(it)); });
+    if (!parts.length && d.pool.length) parts.push('Pool: ' + d.pool.map(function(p){ return p.name; }).join(', '));
+    return parts.join(' · ');
+  }
+
+  function viewAll(){
+    var n = now(), root = h('div', { class: 'list' });
+    state.trip.days.forEach(function(d, i){
+      var b = h('button', { type: 'button', class: 'item' + (d.iso === n.iso ? ' today' : '') },
+        h('div', { class: 'd' }, h('span', { class: 'wd' + (d.weekend ? ' we' : ''), style: 'font-size:12px;color:var(--' + (d.weekend ? 'we' : 'muted') + ')', text: d.wd }),
+          h('span', { class: 'dom', style: 'font-family:var(--mono);font-size:20px;font-weight:600', text: d.dom || d.n })),
+        h('div', null, h('div', { class: 'pl' + (d.show ? ' show' : ''), text: d.place || '–' }), h('div', { class: 'sum', text: summary(d) || 'Nothing planned' })));
+      b.addEventListener('click', function(){ state.sel = i; state.tab = 'day'; render(); });
+      root.appendChild(b);
+    });
+    return root;
+  }
+
+  function viewData(){
+    var root = h('div', { class: 'list' });
+    var loaded = h('div', { class: 'msg' }, state.msg || ('Showing ' + state.trip.days.length + ' days from ' + state.info.src + (state.info.at ? ', loaded ' + state.info.at : '') + '.'));
+    root.appendChild(loaded);
+
+    var file = h('input', { type: 'file', id: 'file', accept: '.csv,.tsv,.txt,text/csv,text/plain' });
+    file.addEventListener('change', function(){
+      var f = file.files && file.files[0]; if (!f) return;
+      var r = new FileReader();
+      r.onload = function(){ load(String(r.result), f.name, true); };
+      r.readAsText(f);
+    });
+    var paste = h('textarea', { id: 'paste', placeholder: 'Or paste CSV text here', spellcheck: 'false' });
+    var pb = h('button', { type: 'button', class: 'btn primary', text: 'Load pasted text' });
+    pb.addEventListener('click', function(){ if (paste.value.trim()) load(paste.value, 'pasted text', true); });
+    var url = h('input', { type: 'text', id: 'url', placeholder: 'https://docs.google.com/spreadsheets/d/e/…/pub?output=csv', inputmode: 'url', autocomplete: 'off' });
+    url.value = currentUrl();
+    var fb = h('button', { type: 'button', class: 'btn', text: 'Fetch from link' });
+    fb.addEventListener('click', function(){
+      var u = url.value.trim(); if (!u) return;
+      sset(KEY.url, u);
+      fetch(u).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
+        .then(function(t){ load(t, 'published link', true); })
+        .catch(function(){ state.msg = 'Could not fetch the link. Check the address and your connection. The saved copy stays in use.'; render(); });
+    });
+    root.appendChild(h('div', { class: 'card' },
+      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'file', text: 'CSV file' }), file),
+      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'paste', text: 'Pasted text' }), paste, h('div', { class: 'btns' }, pb)),
+      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'url', text: 'Published link' }), url, h('div', { class: 'btns' }, fb),
+        h('div', { class: 'hint', text: 'The page also fetches this link by itself each time it opens while online. Google can take a few minutes to publish sheet edits.' }))));
+
+    var errs = state.trip.issues.filter(function(x){ return x.level === 'error'; }).length, warns = state.trip.issues.length - errs;
+    var ic = h('div', { class: 'card' }, h('div', { class: 'lab', text: state.trip.issues.length ? 'Lines to fix: ' + errs + ' errors, ' + warns + ' warnings' : 'Lines to fix' }));
+    if (!state.trip.issues.length) ic.appendChild(h('div', { class: 'empty', text: 'Every line was read cleanly.' }));
+    state.trip.issues.forEach(function(x){
+      ic.appendChild(h('div', { class: 'issue ' + x.level }, h('b', { text: x.level }), 'Day ' + x.day + ': ' + x.msg, x.raw ? h('code', { text: x.raw }) : null));
+    });
+    root.appendChild(ic);
+
+    var cd = h('input', { type: 'date', id: 'cdate' }), ct = h('input', { type: 'time', id: 'ctime' });
+    if (state.clock) { cd.value = state.clock.date || ''; ct.value = state.clock.time || ''; }
+    function setClock(){ state.clock = (cd.value || ct.value) ? { date: cd.value, time: ct.value } : null; renderHead(); renderBanner(); }
+    cd.addEventListener('change', function(){ setClock(); if (cd.value) initSel(); });
+    ct.addEventListener('change', setClock);
+    var real = h('button', { type: 'button', class: 'btn', text: 'Use real time' });
+    real.addEventListener('click', function(){ state.clock = null; initSel(); render(); });
+    var rs = h('button', { type: 'button', class: 'btn', text: 'Reset to built-in sample' });
+    rs.addEventListener('click', function(){ load(sampleCsv, 'Built-in sample', false); try { localStorage.removeItem(KEY.csv); } catch (e) {} });
+    root.appendChild(h('div', { class: 'card' },
+      h('div', { class: 'lab', text: 'Test the clock' }),
+      h('div', { class: 'hint', text: 'Pretend it is a day and time during the trip to see the next-up banner and the greyed-out past items.' }),
+      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'cdate', text: 'Date' }), cd),
+      h('div', { class: 'field' }, h('label', { class: 'lab', for: 'ctime', text: 'Time' }), ct),
+      h('div', { class: 'btns' }, real, rs)));
+    return root;
+  }
+
+  function render(){
+    renderHead(); renderBanner();
+    document.querySelectorAll('.tab').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-tab') === state.tab ? 'true' : 'false'); });
+    var v = $('view'); v.textContent = '';
+    v.appendChild(state.tab === 'all' ? viewAll() : state.tab === 'data' ? viewData() : viewDay());
+    state.msg = state.tab === 'data' ? state.msg : '';
+    var on = document.querySelector('.dchip.on'), strip = document.querySelector('.strip');
+    if (on && strip) strip.scrollLeft = on.offsetLeft - strip.clientWidth / 2 + on.offsetWidth / 2;
+  }
+
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click', function(){ state.tab = b.getAttribute('data-tab'); if (state.tab !== 'data') state.msg = ''; render(); });
+  });
+
+  var saved = sget(KEY.csv);
+  if (saved && buildTrip(saved).days.length) {
+    state.trip = buildTrip(saved);
+    state.info = { src: sget(KEY.src) || 'saved copy', at: sget(KEY.at) || '' };
+    initSel(); render();
+  } else load(sampleCsv, 'Built-in sample', false);
+
+  refresh();
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) refresh(); });
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
