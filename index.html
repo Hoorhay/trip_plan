@@ -278,7 +278,7 @@ function buildTrip(text){
 
   function renderHead(){
     var t = state.trip, ds = t.days.filter(function(d){ return d.dateText; });
-    $('title').textContent = t.title || 'Pocket Trip Plan';
+    $('title').textContent = t.title || 'Trip Plan';
     $('range').textContent = ds.length ? ds[0].dateText + ' – ' + ds[ds.length - 1].dateText : '';
     var testInfo = state.clock ? ' · Clock: ' + (state.clock.date || '') + (state.clock.time ? ' ' + state.clock.time : '') + ' (test)' : '';
     $('stamp').textContent = t.days.length ? 'Plan: ' + state.info.src + (state.info.at ? ' · ' + state.info.at : '') + testInfo : 'No plan loaded';
@@ -559,7 +559,26 @@ function buildTrip(text){
     initSel(); render();
   } else { state.tab = 'data'; checkPersist(false); render(); }
 
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden) render(); });
+  /* Keep the screen in step with the clock. */
+  var lastMin = -1, shownDate = now().iso;
+  function tick(){
+    var n = now();
+    if (n.min === lastMin || state.tab === 'data') return;
+    lastMin = n.min;
+    var y = window.scrollY, st = document.querySelector('.strip'), sx = st ? st.scrollLeft : 0;
+    render();
+    window.scrollTo(0, y);
+    var st2 = document.querySelector('.strip'); if (st2) st2.scrollLeft = sx;
+  }
+  /* Redraw just after each full minute on the device clock. */
+  function schedule(){ setTimeout(function(){ tick(); schedule(); }, 60000 - (Date.now() % 60000) + 200); }
+  schedule();
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) return;
+    var n = now();
+    if (!state.clock && n.iso !== shownDate) { shownDate = n.iso; initSel(); }
+    lastMin = -1; tick();
+  });
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     navigator.serviceWorker.register('sw.js').catch(function(){});
   }
